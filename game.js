@@ -501,6 +501,8 @@ function gameOver() {
   gameRunning = false;
 }
 
+function AI() {}
+
 // Define a function to run the game loop
 function gameLoop() {
   // Update the game state
