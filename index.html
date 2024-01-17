@@ -39,6 +39,11 @@
       font-weight: 600;
     }
 
+    .info {
+      justify-content: space-between;
+      margin-top: 1em;
+    }
+
     .row {
       font-size: 24px;
       display: flex;
@@ -67,22 +72,22 @@
     <h1>Vampose World</h1>
     <div class="canvas-container">
       <canvas id="game" width="800" height="800"></canvas>
-      <div class="info">
+      <div class="info row">
         <div class="row">
-          Score:
+          🏆Score:
           <div id="score"></div>
         </div>
         <div class="row">
-          Lives:
-          <div id="lives"></div>
+          🌍Environment:
+          <div id="clues" class="row">
+            <div class="smell">Smell</div>,
+            <div class="wind">Wind</div>,
+            <div class="brightness">Brightness</div>
+          </div>
         </div>
         <div class="row">
-          Environment:
-          <div id="clues" class="row">
-            <div class="smell">E</div>,
-            <div class="wind">W</div>,
-            <div class="brightness">B</div>
-          </div>
+          ❤️:
+          <div id="lives"></div>
         </div>
       </div>
     </div>
