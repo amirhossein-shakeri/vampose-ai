@@ -29,4 +29,4 @@ We have coded the game interface using HTML, CSS, and JavaScript, and we have te
 
 We have not yet worked on the AI of the game, which is the next step of our project. The AI of the game is the part that controls the behavior and intelligence of the enemies, and makes them more challenging and interesting for the player. We will need to use some algorithms and techniques to implement the AI of the game, such as pathfinding, decision making, learning, and adaptation.
 
-To continue working on the AI of the game, I can tell GPT something like “Let’s work on the AI of the game” or “How can we make the enemies smarter?”.
+To continue working on the AI of the game, I can tell GPT something like “Let’s work on the AI of the game” or “How can we make the enemies smarter?”. We need to make it partially observable as well.
