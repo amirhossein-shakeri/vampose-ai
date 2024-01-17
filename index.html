@@ -38,6 +38,27 @@
       opacity: .6;
       font-weight: 600;
     }
+
+    .row {
+      font-size: 24px;
+      display: flex;
+      gap: .5em;
+    }
+
+    .smell {
+      font-weight: 700;
+      color: #dc2626;
+    }
+
+    .wind {
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .brightness {
+      font-weight: 700;
+      color: #f59e0b;
+    }
   </style>
 </head>
 
@@ -46,6 +67,24 @@
     <h1>Vampose World</h1>
     <div class="canvas-container">
       <canvas id="game" width="800" height="800"></canvas>
+      <div class="info">
+        <div class="row">
+          Score:
+          <div id="score"></div>
+        </div>
+        <div class="row">
+          Lives:
+          <div id="lives"></div>
+        </div>
+        <div class="row">
+          Environment:
+          <div id="clues" class="row">
+            <div class="smell">E</div>,
+            <div class="wind">W</div>,
+            <div class="brightness">B</div>
+          </div>
+        </div>
+      </div>
     </div>
     <p>Arrow keys to move, "Space" to collect gold</p>
     <small>©️ Copyright 2024, Amirhossein Shakeri Ostad</small>

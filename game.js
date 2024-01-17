@@ -1,6 +1,9 @@
 // Get the canvas element and its context
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
+const scoreEl = document.getElementById("score");
+const livesEl = document.getElementById("lives");
+const cluesEl = document.getElementById("clues");
 
 // Define some variables for the game state
 let gameRunning = true; // Whether the game is running or not
@@ -396,11 +399,18 @@ function renderGame() {
   //   ctx.fillRect(hole.x, hole.y, hole.size, hole.size);
   // }
 
+  // Information
+  scoreEl.innerText = gameScore;
+  livesEl.innerText = gameLives;
+
+  // cluesEl.innerHTML = "";
+  // TODO: append child environment clues with different colors
+
   // Draw the game information
-  ctx.fillStyle = "#3b82f6";
-  ctx.font = "20px Arial";
-  ctx.fillText("Score: " + gameScore, 10, 30);
-  ctx.fillText("Lives: " + gameLives, 10, 60);
+  // ctx.fillStyle = "#3b82f6";
+  // ctx.font = "20px Arial";
+  // ctx.fillText("Score: " + gameScore, 10, 30);
+  // ctx.fillText("Lives: " + gameLives, 10, 60);
 }
 
 // Define a function to handle the user input
