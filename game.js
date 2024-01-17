@@ -26,6 +26,7 @@ const NUM_GOLDS = 3; // The number of golds in the game
 const NUM_ENEMIES = 2;
 const NUM_HOLES = 12;
 const ENEMIES_MOVE = false;
+const AUTO_COLLECT_GOLDS = false;
 
 // Define some colors for the game elements
 const BACKGROUND_COLOR = "transparent"; // The color of the background
@@ -62,8 +63,9 @@ function initGame() {
   // Create the player object
   console.log(`Creating the player object...`);
   player = {
-    x: Math.floor(Math.random() * GRID_COLS) * GRID_SIZE, // The x coordinate of the player
-    y: Math.floor(Math.random() * GRID_ROWS) * GRID_SIZE, // The y coordinate of the player
+    // x: Math.floor(Math.random() * GRID_COLS) * GRID_SIZE, // The x coordinate of the player
+    // y: Math.floor(Math.random() * GRID_ROWS) * GRID_SIZE, // The y coordinate of the player
+    ...generateRandomEmptyXY(),
     size: PLAYER_SIZE, // The size of the player
     color: PLAYER_COLOR, // The color of the player
   };
@@ -73,13 +75,14 @@ function initGame() {
   console.log(`Creating ${NUM_ENEMIES} enemies...`);
   for (let i = 0; i < NUM_ENEMIES; i++) {
     // Generate a random position for the enemy
-    let x = Math.floor(Math.random() * GRID_COLS) * GRID_SIZE;
-    let y = Math.floor(Math.random() * GRID_ROWS) * GRID_SIZE;
+    // let x = Math.floor(Math.random() * GRID_COLS) * GRID_SIZE; // TODO: generateRandomXY
+    // let y = Math.floor(Math.random() * GRID_ROWS) * GRID_SIZE; // TODO: generateRandomEmptyXY
 
     // Create the enemy object
     let enemy = {
-      x: x, // The x coordinate of the enemy
-      y: y, // The y coordinate of the enemy
+      // x: x, // The x coordinate of the enemy
+      // y: y, // The y coordinate of the enemy
+      ...generateRandomEmptyXY(),
       size: ENEMY_SIZE, // The size of the enemy
       color: ENEMY_COLOR, // The color of the enemy
     };
@@ -93,13 +96,14 @@ function initGame() {
   console.log(`Creating ${NUM_GOLDS} golds...`);
   for (let i = 0; i < NUM_GOLDS; i++) {
     // Generate a random position for the gold
-    let x = Math.floor(Math.random() * GRID_COLS) * GRID_SIZE;
-    let y = Math.floor(Math.random() * GRID_ROWS) * GRID_SIZE;
+    // let x = Math.floor(Math.random() * GRID_COLS) * GRID_SIZE;
+    // let y = Math.floor(Math.random() * GRID_ROWS) * GRID_SIZE;
 
     // Create the gold object
     let gold = {
-      x: x, // The x coordinate of the gold
-      y: y, // The y coordinate of the gold
+      // x: x, // The x coordinate of the gold
+      // y: y, // The y coordinate of the gold
+      ...generateRandomEmptyXY(),
       size: GOLD_SIZE, // The size of the gold
       color: GOLD_COLOR, // The color of the gold
     };
@@ -113,13 +117,14 @@ function initGame() {
   console.log(`Creating ${NUM_HOLES} holes...`);
   for (let i = 0; i < NUM_HOLES; i++) {
     // Generate a random position for the hole
-    let x = Math.floor(Math.random() * GRID_COLS) * GRID_SIZE;
-    let y = Math.floor(Math.random() * GRID_ROWS) * GRID_SIZE;
+    // let x = Math.floor(Math.random() * GRID_COLS) * GRID_SIZE;
+    // let y = Math.floor(Math.random() * GRID_ROWS) * GRID_SIZE;
 
     // Create the hole object
     let hole = {
-      x: x, // The x coordinate of the hole
-      y: y, // The y coordinate of the hole
+      // x: x, // The x coordinate of the hole
+      // y: y, // The y coordinate of the hole
+      ...generateRandomEmptyXY(),
       size: HOLE_SIZE, // The size of the hole
       color: HOLE_COLOR, // The color of the hole
     };
@@ -246,29 +251,26 @@ function updateGame() {
   // Update the gold position
   for (let gold of golds) {
     // Check the collision between the gold and the player
-    if (isColliding(gold, player)) {
-      // Play the collect sound
-      COLLECT_GOLD_SOUND.play();
-
-      // Increase the score
-      gameScore++;
-
-      // Check the game win condition
-      if (gameScore == golds.length) {
-        // Play the game win sound
-        GAME_WIN_SOUND.play();
-
-        // Show the game win message
-        alert("YOU WIN");
-
-        // Reload the page
-        document.location.reload();
-
-        // Stop the game loop
-        gameRunning = false;
-      } else {
-        // Remove the gold from the array
-        golds.splice(golds.indexOf(gold), 1);
+    if (AUTO_COLLECT_GOLDS) {
+      if (isColliding(gold, player)) {
+        // Play the collect sound
+        COLLECT_GOLD_SOUND.play();
+        // Increase the score
+        gameScore++;
+        // Check the game win condition
+        if (gameScore === NUM_GOLDS) {
+          // Play the game win sound
+          GAME_WIN_SOUND.play();
+          // Show the game win message
+          alert("YOU WIN");
+          // Reload the page
+          document.location.reload();
+          // Stop the game loop
+          gameRunning = false;
+        } else {
+          // Remove the gold from the array
+          golds.splice(golds.indexOf(gold), 1);
+        }
       }
     }
   }
@@ -447,8 +449,10 @@ function handleInput() {
               // Increase the score
               gameScore++;
 
+              console.log("GAME SCORE: ", gameScore, golds, golds.length);
+
               // Check the game win condition
-              if (gameScore == golds.length) {
+              if (gameScore === NUM_GOLDS) {
                 // Play the game win sound
                 GAME_WIN_SOUND.play();
 
@@ -502,6 +506,31 @@ function isColliding(obj1, obj2) {
   //   // Return false if they are not colliding
   //   return false;
   // }
+}
+
+function generateRandomXY() {
+  return {
+    x: Math.floor(Math.random() * GRID_COLS) * GRID_SIZE,
+    y: Math.floor(Math.random() * GRID_ROWS) * GRID_SIZE,
+  };
+}
+
+function generateRandomEmptyXY() {
+  let xy = generateRandomXY();
+  while (isCollidingWithEntities(xy)) {
+    xy = generateRandomXY();
+  }
+  return xy;
+}
+
+function isCollidingWithEntities(obj) {
+  const entities = [player, ...enemies, ...golds, ...holes];
+  for (entity of entities) {
+    if (obj && entity && isColliding(obj, entity)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 // Define a function to run the game loop
