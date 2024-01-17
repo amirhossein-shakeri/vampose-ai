@@ -3,17 +3,53 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Simple 2D Game</title>
+  <title>Vampose World Game</title>
   <style>
-    /* You can add some CSS styles here */
+    body {
+      background-color: #e2e8f0;
+      height: 100%;
+      font-family: sans-serif;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      /* min-height: 100vh; */
+      align-items: center;
+      justify-content: center;
+      gap: 2em;
+    }
+
+    .canvas-container {
+      background-color: #fff;
+      padding: 1em;
+      border-radius: 1em;
+      box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      margin: 0 auto;
+    }
+
     canvas {
-      border: 1px solid black;
+      border: 1px solid #334155;
+    }
+
+    small {
+      color: #334155;
+      opacity: .6;
+      font-weight: 600;
     }
   </style>
 </head>
 
 <body>
-  <canvas id="game" width="800" height="800"></canvas>
+  <div class="container">
+    <h1>Vampose World</h1>
+    <div class="canvas-container">
+      <canvas id="game" width="800" height="800"></canvas>
+    </div>
+    <p>Arrow keys to move, "Space" to collect gold</p>
+    <small>©️ Copyright 2024, Amirhossein Shakeri Ostad</small>
+  </div>
   <script src="game.js"></script>
 </body>
 

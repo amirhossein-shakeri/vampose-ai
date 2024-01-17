@@ -29,11 +29,11 @@ const ENEMIES_MOVE = false;
 const AUTO_COLLECT_GOLDS = false;
 
 // Define some colors for the game elements
-const BACKGROUND_COLOR = "transparent"; // The color of the background
-const PLAYER_COLOR = "green"; // The color of the player
-const ENEMY_COLOR = "red"; // The color of the enemy
-const GOLD_COLOR = "yellow"; // The color of the gold
-const HOLE_COLOR = "black"; // The color of the hole
+const BACKGROUND_COLOR = "#fff"; // The color of the background
+const PLAYER_COLOR = "#22c55e"; // The color of the player
+const ENEMY_COLOR = "#dc2626"; // The color of the enemy
+const GOLD_COLOR = "#f59e0b"; // The color of the gold
+const HOLE_COLOR = "#334155"; // The color of the hole
 
 // Define some images for the game elements
 const PLAYER_IMAGE = new Image(); // The image of the player
@@ -319,7 +319,7 @@ function renderGame() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   // Draw the grid lines
-  ctx.strokeStyle = "black";
+  ctx.strokeStyle = HOLE_COLOR;
   ctx.lineWidth = 1;
   for (let i = 0; i <= GRID_ROWS; i++) {
     for (let j = 0; j <= GRID_COLS; j++) {
@@ -397,7 +397,7 @@ function renderGame() {
   // }
 
   // Draw the game information
-  ctx.fillStyle = "black";
+  ctx.fillStyle = "#3b82f6";
   ctx.font = "20px Arial";
   ctx.fillText("Score: " + gameScore, 10, 30);
   ctx.fillText("Lives: " + gameLives, 10, 60);
@@ -414,31 +414,46 @@ function handleInput() {
 
       // Switch on the key code
       switch (keyCode) {
-        case 37: // Left arrow
+        // Left arrow
+        case 37:
+        case 65:
           // Move the player left
           player.x -= GRID_SIZE;
           // player.vx = -1;
           // player.vy = 0;
           break;
-        case 38: // Up arrow
+
+        // Up arrow
+        case 38:
+        case 87:
           // Move the player up
           player.y -= GRID_SIZE;
           // player.vx = 0;
           // player.vy = -1;
           break;
-        case 39: // Right arrow
+
+        // Right arrow
+        case 39:
+        case 68:
           // Move the player right
           player.x += GRID_SIZE;
           // player.vx = 1;
           // player.vy = 0;
           break;
-        case 40: // Down arrow
+
+        // Down arrow
+        case 40:
+        case 83:
           // Move the player down
           player.y += GRID_SIZE;
           // player.vx = 0;
           // player.vy = 1;
           break;
+
         case 32: // Space
+        case 13: // Enter
+        case 69: // E
+        case 70: // F
           // Collect the gold
           for (let gold of golds) {
             // Check if the player is in the same block as the gold
@@ -448,8 +463,6 @@ function handleInput() {
 
               // Increase the score
               gameScore++;
-
-              console.log("GAME SCORE: ", gameScore, golds, golds.length);
 
               // Check the game win condition
               if (gameScore === NUM_GOLDS) {
