@@ -25,9 +25,9 @@ const HOLE_SIZE = 75; // The size of the hole in pixels
 const GRID_SIZE = 100; // The size of the grid in pixels
 const GRID_ROWS = 8; // The number of rows in the grid
 const GRID_COLS = 8; // The number of columns in the grid
-const NUM_GOLDS = 3; // The number of golds in the game
-const NUM_ENEMIES = 2;
-const NUM_HOLES = 12;
+const NUM_GOLDS = 4; // The number of golds in the game
+const NUM_ENEMIES = 3;
+const NUM_HOLES = 16;
 const ENEMIES_MOVE = false;
 const AUTO_COLLECT_GOLDS = false;
 
@@ -63,86 +63,51 @@ HIT_HOLE_SOUND.src = "hit_hole.wav"; // The source of the sound
 // Define a function to initialize the game
 function initGame() {
   console.log(`Initializing the game...`);
-  // Create the player object
-  console.log(`Creating the player object...`);
   player = {
-    // x: Math.floor(Math.random() * GRID_COLS) * GRID_SIZE, // The x coordinate of the player
-    // y: Math.floor(Math.random() * GRID_ROWS) * GRID_SIZE, // The y coordinate of the player
     ...generateRandomEmptyXY(),
-    size: PLAYER_SIZE, // The size of the player
-    color: PLAYER_COLOR, // The color of the player
+    size: PLAYER_SIZE,
+    color: PLAYER_COLOR,
   };
-  console.log(`Player at (${player.x}, ${player.y})`, player);
+  console.log(`Created player at (${player.x}, ${player.y})`, player);
 
   // Create some enemy objects
   console.log(`Creating ${NUM_ENEMIES} enemies...`);
   for (let i = 0; i < NUM_ENEMIES; i++) {
-    // Generate a random position for the enemy
-    // let x = Math.floor(Math.random() * GRID_COLS) * GRID_SIZE; // TODO: generateRandomXY
-    // let y = Math.floor(Math.random() * GRID_ROWS) * GRID_SIZE; // TODO: generateRandomEmptyXY
-
-    // Create the enemy object
     let enemy = {
-      // x: x, // The x coordinate of the enemy
-      // y: y, // The y coordinate of the enemy
       ...generateRandomEmptyXY(),
-      size: ENEMY_SIZE, // The size of the enemy
-      color: ENEMY_COLOR, // The color of the enemy
+      size: ENEMY_SIZE,
+      color: ENEMY_COLOR,
     };
-
     // Add the enemy to the array of enemies
     enemies.push(enemy);
-    console.log(`Enemy at (${enemy.x}, ${enemy.y})`);
+    console.log(`Created Enemy at (${enemy.x}, ${enemy.y})`);
   }
 
   // Create some gold objects
   console.log(`Creating ${NUM_GOLDS} golds...`);
   for (let i = 0; i < NUM_GOLDS; i++) {
-    // Generate a random position for the gold
-    // let x = Math.floor(Math.random() * GRID_COLS) * GRID_SIZE;
-    // let y = Math.floor(Math.random() * GRID_ROWS) * GRID_SIZE;
-
-    // Create the gold object
     let gold = {
-      // x: x, // The x coordinate of the gold
-      // y: y, // The y coordinate of the gold
       ...generateRandomEmptyXY(),
-      size: GOLD_SIZE, // The size of the gold
-      color: GOLD_COLOR, // The color of the gold
+      size: GOLD_SIZE,
+      color: GOLD_COLOR,
     };
-
-    // Add the gold to the array of golds
     golds.push(gold);
-    console.log(`Gold at (${gold.x}, ${gold.y})`);
+    console.log(`Created gold at (${gold.x}, ${gold.y})`);
   }
 
   // Create some hole objects
   console.log(`Creating ${NUM_HOLES} holes...`);
   for (let i = 0; i < NUM_HOLES; i++) {
-    // Generate a random position for the hole
-    // let x = Math.floor(Math.random() * GRID_COLS) * GRID_SIZE;
-    // let y = Math.floor(Math.random() * GRID_ROWS) * GRID_SIZE;
-
-    // Create the hole object
     let hole = {
-      // x: x, // The x coordinate of the hole
-      // y: y, // The y coordinate of the hole
       ...generateRandomEmptyXY(),
-      size: HOLE_SIZE, // The size of the hole
-      color: HOLE_COLOR, // The color of the hole
+      size: HOLE_SIZE,
+      color: HOLE_COLOR,
     };
-
-    // Add the hole to the array of holes
     holes.push(hole);
-    console.log(`Hole at (${hole.x}, ${hole.y})`);
+    console.log(`Created hole at (${hole.x}, ${hole.y})`);
   }
-
-  // Start the game loop
+  setupUserInputHandler();
   console.log(`Starting the game loop...`);
-
-  // Handle the user input
-  handleInput();
-
   requestAnimationFrame(gameLoop);
 }
 
@@ -172,11 +137,9 @@ function updateGame() {
   // Update the enemy position
   for (let enemy of enemies) {
     if (ENEMIES_MOVE) {
-      // Choose a random direction for the enemy
-      let direction = Math.floor(Math.random() * 4);
-
+      let randomEnemyDirection = Math.floor(Math.random() * 4);
       // Set the enemy velocity based on the direction
-      switch (direction) {
+      switch (randomEnemyDirection) {
         case 0: // Up
           enemy.vx = 0;
           enemy.vy = -1;
@@ -216,25 +179,10 @@ function updateGame() {
 
     // Check the collision between the enemy and the player
     if (isColliding(enemy, player)) {
-      // Play the hit sound
       HIT_ENEMY_SOUND.play();
-
-      // Reduce the lives
       gameLives--;
-
-      // Check the game over condition
       if (!gameLives) {
-        // Play the game over sound
-        GAME_OVER_SOUND.play();
-
-        // Show the game over message
-        alert("GAME OVER");
-
-        // Reload the page
-        document.location.reload();
-
-        // Stop the game loop
-        gameRunning = false;
+        gameOver();
       } else {
         // Reset the player position and velocity
         player.x = Math.floor(Math.random() * GRID_COLS) * GRID_SIZE;
@@ -256,24 +204,7 @@ function updateGame() {
     // Check the collision between the gold and the player
     if (AUTO_COLLECT_GOLDS) {
       if (isColliding(gold, player)) {
-        // Play the collect sound
-        COLLECT_GOLD_SOUND.play();
-        // Increase the score
-        gameScore++;
-        // Check the game win condition
-        if (gameScore === NUM_GOLDS) {
-          // Play the game win sound
-          GAME_WIN_SOUND.play();
-          // Show the game win message
-          alert("YOU WIN");
-          // Reload the page
-          document.location.reload();
-          // Stop the game loop
-          gameRunning = false;
-        } else {
-          // Remove the gold from the array
-          golds.splice(golds.indexOf(gold), 1);
-        }
+        collectGold(gold);
       }
     }
   }
@@ -282,25 +213,12 @@ function updateGame() {
   for (let hole of holes) {
     // Check the collision between the hole and the player
     if (isColliding(hole, player)) {
-      // Play the hit sound
       HIT_HOLE_SOUND.play();
-
-      // Reduce the lives
       gameLives--;
 
       // Check the game over condition
       if (!gameLives) {
-        // Play the game over sound
-        GAME_OVER_SOUND.play();
-
-        // Show the game over message
-        alert("GAME OVER");
-
-        // Reload the page
-        document.location.reload();
-
-        // Stop the game loop
-        gameRunning = false;
+        gameOver();
       } else {
         // Reset the player position and velocity
         player.x = Math.floor(Math.random() * GRID_COLS) * GRID_SIZE;
@@ -322,7 +240,7 @@ function renderGame() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   // Draw the grid lines
-  ctx.strokeStyle = HOLE_COLOR;
+  ctx.strokeStyle = "#cbd5e1";
   ctx.lineWidth = 1;
   for (let i = 0; i <= GRID_ROWS; i++) {
     for (let j = 0; j <= GRID_COLS; j++) {
@@ -341,10 +259,6 @@ function renderGame() {
     player.size
   );
 
-  // // Draw the player
-  // ctx.fillStyle = player.color;
-  // ctx.fillRect(player.x, player.y, player.size, player.size);
-
   // Draw the enemies
   for (let enemy of enemies) {
     ctx.fillStyle = enemy.color;
@@ -356,12 +270,6 @@ function renderGame() {
     );
   }
 
-  // // Draw the enemies
-  // for (let enemy of enemies) {
-  //   ctx.fillStyle = enemy.color;
-  //   ctx.fillRect(enemy.x, enemy.y, enemy.size, enemy.size);
-  // }
-
   // Draw the golds
   for (let gold of golds) {
     ctx.fillStyle = gold.color;
@@ -372,12 +280,6 @@ function renderGame() {
       gold.size
     );
   }
-
-  // // Draw the golds
-  // for (let gold of golds) {
-  //   ctx.fillStyle = gold.color;
-  //   ctx.fillRect(gold.x, gold.y, gold.size, gold.size);
-  // }
 
   // Draw the holes
   for (let hole of holes) {
@@ -393,14 +295,8 @@ function renderGame() {
     ctx.fill();
   }
 
-  // // Draw the holes
-  // for (let hole of holes) {
-  //   ctx.fillStyle = hole.color;
-  //   ctx.fillRect(hole.x, hole.y, hole.size, hole.size);
-  // }
-
   // Information
-  scoreEl.innerText = gameScore;
+  scoreEl.innerText = gameScore + " / " + NUM_GOLDS;
   livesEl.innerText = gameLives;
 
   // cluesEl.innerHTML = "";
@@ -414,47 +310,34 @@ function renderGame() {
 }
 
 // Define a function to handle the user input
-function handleInput() {
-  // Listen for keydown events
+function setupUserInputHandler() {
   document.addEventListener("keydown", function (event) {
-    // Check if the game is running
     if (gameRunning) {
-      // Get the key code
       let keyCode = event.keyCode;
-
-      // Switch on the key code
       switch (keyCode) {
-        // Left arrow
-        case 37:
-        case 65:
-          // Move the player left
+        case 37: // Left arrow
+        case 65: // A
           player.x -= GRID_SIZE;
           // player.vx = -1;
           // player.vy = 0;
           break;
 
-        // Up arrow
-        case 38:
-        case 87:
-          // Move the player up
+        case 38: // Up arrow
+        case 87: // W
           player.y -= GRID_SIZE;
           // player.vx = 0;
           // player.vy = -1;
           break;
 
-        // Right arrow
-        case 39:
-        case 68:
-          // Move the player right
+        case 39: // Right arrow
+        case 68: // D
           player.x += GRID_SIZE;
           // player.vx = 1;
           // player.vy = 0;
           break;
 
-        // Down arrow
-        case 40:
-        case 83:
-          // Move the player down
+        case 40: // Down arrow
+        case 83: // S
           player.y += GRID_SIZE;
           // player.vx = 0;
           // player.vy = 1;
@@ -464,33 +347,9 @@ function handleInput() {
         case 13: // Enter
         case 69: // E
         case 70: // F
-          // Collect the gold
           for (let gold of golds) {
-            // Check if the player is in the same block as the gold
             if (player.x == gold.x && player.y == gold.y) {
-              // Play the collect sound
-              COLLECT_GOLD_SOUND.play();
-
-              // Increase the score
-              gameScore++;
-
-              // Check the game win condition
-              if (gameScore === NUM_GOLDS) {
-                // Play the game win sound
-                GAME_WIN_SOUND.play();
-
-                // Show the game win message
-                alert("YOU WIN");
-
-                // Reload the page
-                document.location.reload();
-
-                // Stop the game loop
-                gameRunning = false;
-              } else {
-                // Remove the gold from the array
-                golds.splice(golds.indexOf(gold), 1);
-              }
+              collectGold(gold);
             }
           }
           break;
@@ -554,6 +413,31 @@ function isCollidingWithEntities(obj) {
     }
   }
   return false;
+}
+
+function collectGold(gold) {
+  COLLECT_GOLD_SOUND.play();
+  gameScore++;
+  if (gameScore === NUM_GOLDS) {
+    win();
+  } else {
+    console.log(`Removing gold at (${gold.x}, ${gold.y})...`);
+    golds.splice(golds.indexOf(gold), 1);
+  }
+}
+
+function win() {
+  GAME_WIN_SOUND.play();
+  alert("YOU WIN");
+  document.location.reload();
+  gameRunning = false;
+}
+
+function gameOver() {
+  GAME_OVER_SOUND.play();
+  alert("GAME OVER");
+  document.location.reload();
+  gameRunning = false;
 }
 
 // Define a function to run the game loop
