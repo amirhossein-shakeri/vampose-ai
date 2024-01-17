@@ -14,6 +14,8 @@ let player; // The player object
 let enemies = []; // An array of enemy objects
 let golds = []; // An array of gold objects
 let holes = []; // An array of hole objects
+let grid = [];
+let visible = [];
 
 // Define some constants for the game settings
 const GAME_FPS = 60; // The frames per second of the game
@@ -25,7 +27,7 @@ const HOLE_SIZE = 75; // The size of the hole in pixels
 const GRID_SIZE = 100; // The size of the grid in pixels
 const GRID_ROWS = 8; // The number of rows in the grid
 const GRID_COLS = 8; // The number of columns in the grid
-const NUM_GOLDS = 4; // The number of golds in the game
+const NUM_GOLDS = 1; // The number of golds in the game
 const NUM_ENEMIES = 3;
 const NUM_HOLES = 16;
 const ENEMIES_MOVE = false;
@@ -60,14 +62,42 @@ HIT_ENEMY_SOUND.src = "hit_enemy.wav"; // The source of the sound
 const HIT_HOLE_SOUND = new Audio(); // The sound of hitting hole
 HIT_HOLE_SOUND.src = "hit_hole.wav"; // The source of the sound
 
+class Block {
+  constructor(
+    size = GRID_SIZE,
+    color = "#64748b",
+    wind = false,
+    smell = false,
+    bright = false
+  ) {
+    this.size = size;
+    this.color = color;
+    this.wind = wind;
+    this.smell = smell;
+    this.bright = bright;
+  }
+}
+
 // Define a function to initialize the game
 function initGame() {
   console.log(`Initializing the game...`);
+
+  console.log(`Limiting visibility...`);
+  for (let i = 0; i <= GRID_ROWS; i++) {
+    grid[i] = [];
+    visible[i] = [];
+    for (let j = 0; j <= GRID_COLS; j++) {
+      grid[i][j] = new Block();
+      visible[i][j] = false;
+    }
+  }
+
   player = {
     ...generateRandomEmptyXY(),
     size: PLAYER_SIZE,
     color: PLAYER_COLOR,
   };
+  visible[player.x / GRID_SIZE][player.y / GRID_SIZE] = true;
   console.log(`Created player at (${player.x}, ${player.y})`, player);
 
   // Create some enemy objects
@@ -250,37 +280,6 @@ function renderGame() {
     }
   }
 
-  // Draw the player
-  ctx.fillStyle = player.color;
-  ctx.fillRect(
-    player.x + (GRID_SIZE - player.size) / 2,
-    player.y + (GRID_SIZE - player.size) / 2,
-    player.size,
-    player.size
-  );
-
-  // Draw the enemies
-  for (let enemy of enemies) {
-    ctx.fillStyle = enemy.color;
-    ctx.fillRect(
-      enemy.x + (GRID_SIZE - enemy.size) / 2,
-      enemy.y + (GRID_SIZE - enemy.size) / 2,
-      enemy.size,
-      enemy.size
-    );
-  }
-
-  // Draw the golds
-  for (let gold of golds) {
-    ctx.fillStyle = gold.color;
-    ctx.fillRect(
-      gold.x + (GRID_SIZE - gold.size) / 2,
-      gold.y + (GRID_SIZE - gold.size) / 2,
-      gold.size,
-      gold.size
-    );
-  }
-
   // Draw the holes
   for (let hole of holes) {
     ctx.fillStyle = hole.color;
@@ -294,6 +293,68 @@ function renderGame() {
     );
     ctx.fill();
   }
+
+  for (let entity of [player, ...enemies, ...golds]) {
+    ctx.fillStyle = entity.color;
+    ctx.fillRect(
+      entity.x + (GRID_SIZE - entity.size) / 2,
+      entity.y + (GRID_SIZE - entity.size) / 2,
+      entity.size,
+      entity.size
+    );
+  }
+
+  // // Draw the player
+  // ctx.fillStyle = player.color;
+  // ctx.fillRect(
+  //   player.x + (GRID_SIZE - player.size) / 2,
+  //   player.y + (GRID_SIZE - player.size) / 2,
+  //   player.size,
+  //   player.size
+  // );
+
+  // // Draw the enemies
+  // for (let enemy of enemies) {
+  //   ctx.fillStyle = enemy.color;
+  //   ctx.fillRect(
+  //     enemy.x + (GRID_SIZE - enemy.size) / 2,
+  //     enemy.y + (GRID_SIZE - enemy.size) / 2,
+  //     enemy.size,
+  //     enemy.size
+  //   );
+  // }
+
+  // // Draw the golds
+  // for (let gold of golds) {
+  //   ctx.fillStyle = gold.color;
+  //   ctx.fillRect(
+  //     gold.x + (GRID_SIZE - gold.size) / 2,
+  //     gold.y + (GRID_SIZE - gold.size) / 2,
+  //     gold.size,
+  //     gold.size
+  //   );
+  // }
+
+  // loop through the grid rows and columns
+  // for (let i = 0; i < GRID_ROWS; i++) {
+  //   for (let j = 0; j < GRID_COLS; j++) {
+  //     // get the x and y coordinates of the block
+  //     let x = j * GRID_SIZE;
+  //     let y = i * GRID_SIZE;
+
+  //     // draw the block with its color
+  //     const block = grid[i][j];
+  //     // ctx.fillStyle = block.color;
+  //     // ctx.fillRect(x, y, block.size, block.size);
+
+  //     // check if the player has seen this block before
+  //     if (!visible[i][j]) {
+  //       // draw a gray color over the block to hide it
+  //       ctx.fillStyle = "#64748b";
+  //       ctx.fillRect(x + 5, y + 5, block.size - 10, block.size - 10);
+  //     }
+  //   }
+  // }
 
   // Information
   scoreEl.innerText = gameScore + " / " + NUM_GOLDS;
